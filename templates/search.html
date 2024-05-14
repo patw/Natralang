@@ -1,0 +1,38 @@
+{% extends 'nl_base.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-10 col-lg-10 mx-lg-auto mx-md-auto">
+
+            {{ wtf.quick_form(form) }}
+
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Database</th>
+                        <th>Collection</th>
+                        <th>Description</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for source in sources %}
+                    <tr>
+                        <td>{{ source.db_name }}</td>
+                        <td>{{ source.col_name }}</td>
+                        <td>{{ source.description }}</td>
+                        <td>{{ source.score }}...</td>
+                        <td><a href="edit/{{ source._id}}">🖊️</a></td>
+                        <td><a href="delete/{{ source._id}}">🔫</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends 'nl_base.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-10 col-lg-10 mx-lg-auto mx-md-auto">
+            <h3>Natural Language Query Tester</h3>
+            <table class="table table-sm">
+                <tbody>
+                    <tr>
+                        <td><b>Question</b></td><td>{{ result_data["question"] }}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Prompt</b></td><td>{{ result_data["prompt"] }}</td>
+                    </tr>
+                    <tr>
+                        <td><b>LLM Generated Query</b></td><td>{{ result_data["llm_generated_query"] }}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Collections</b></td><td>{{ result_data["collections"] }}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Query Output</b></td><td>{{ result_data["query_output"] }}</td>
+                    </tr>
+                    <tr>
+                        <td><b>LLM Answer</b></td><td>{{ result_data["llm_answer"] }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            {{ wtf.quick_form(form) }}
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript code to set focus -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get the input element by its id
+        var myInput = document.getElementById('question');
+
+        // Set focus on the input element
+        myInput.focus();
+    });
+</script>
+
+{% endblock %}

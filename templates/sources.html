@@ -1,0 +1,57 @@
+{% extends 'nl_base.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-10 col-lg-10 mx-lg-auto mx-md-auto">
+
+            <h3 class="pt-5 pb-2">Data Sources</h1>
+
+            {{ wtf.quick_form(form) }}
+
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Database</th>
+                        <th>Collection</th>
+                        <th>Description</th>
+                        <th>Sample Data</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <th><a href="sources?page={{ page - 1}}">⬅️</a></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th><a href="sources?page={{ page + 1}}">➡️</a></th>
+                    </tr>
+                    {% for source in sources %}
+                    <tr>
+                        <td>{{ source.db_name }}</td>
+                        <td>{{ source.col_name }}</td>
+                        <td>{{ source.description }}</td>
+                        <td>{{ source.sample|truncate(100) }}...</td>
+                        <td><a href="edit/{{ source._id}}">🖊️</a></td>
+                        <td><a href="delete/{{ source._id}}">🔫</a></td>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <th><a href="sources?page={{ page - 1}}">⬅️</a></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th><a href="sources?page={{ page + 1}}">➡️</a></th>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
