@@ -64,7 +64,7 @@ service_type = os.environ["SERVICE"]
 if "MISTRAL_API_KEY" in os.environ:    
     mistral_client = MistralClient(api_key=os.environ["MISTRAL_API_KEY"])
     model_name = os.environ["MODEL_NAME"]
-    DEFAULT_SCORE_CUT = 0.8
+    DEFAULT_SCORE_CUT = 0.82
     DEFAULT_VECTOR_DIMENSIONS = 1024
 
 if "OPENAI_API_KEY" in os.environ:
@@ -330,6 +330,13 @@ def index():
             source_blob += "Collection Name: " + source["col_name"] + "\n"
             source_blob += "Description: " + source["description"] + "\n"
             source_blob += "Example Document: " + source["sample"] + "\n\n"
+
+        # We don't have any data sources :(
+        if source_blob == "":
+            result_data["llm_answer"] = "I couldn't find any data sources that could answer this question."
+            # Spit out the template - without data :(
+            return render_template('index.html', result_data=result_data, form=form)
+
 
         # Assemble the final prompt
         prompt = DEFAULT_QUERY_PROMPT.format(collections=source_blob, question=q)
