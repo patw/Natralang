@@ -83,7 +83,7 @@ if "AZURE_API_KEY" in os.environ:
 
 # Some handy defaults that control the app
 DEFAULT_QUERY_SYSTEM_MESSAGE = "You produce valid Mongo aggregation queries based on the collection descriptions and the users question.  You always output in json"
-DEFAULT_QUERY_PROMPT = "Mongo Collections:\n{collections}\n\nUsing the above collections, create a mongo aggregation that can answer '{question}'. ONLY OUTPUT THE MONGO AGGREGATION PIPELINE AND NOTHING ELSE!"
+DEFAULT_QUERY_PROMPT = "Mongo Collections:\n{collections}\n\nUsing the above collections, create a mongo aggregation that can answer '{question}'. ONLY OUTPUT A VALID MONGO AGGREGATION PIPELINE IN JSON AND NOTHING ELSE!"
 
 DEFAULT_ANSWER_SYSTEM_MESSAGE = "You provide detailed summaries to answer the users question."
 DEFAULT_ANSWER_PROMPT = "Query results:\n{results}\n\nUsing the above results from a mongo query, answer the users question: '{question}'"
@@ -345,6 +345,9 @@ def index():
         # Generate mongo query using the LLM and our assembled prompt
         # Temperature is VERY low here, we want no creativity in this process
         llm_generated_query = llm(prompt, DEFAULT_QUERY_SYSTEM_MESSAGE, 0.1)
+
+        # Clean up weird stuff the LLM generates
+        llm_generated_query = llm_generated_query.replace("\\", "")  # Why do you add backslashes to things
 
         try:
             result_data["llm_generated_query"] = json.loads(llm_generated_query) # convert to json
