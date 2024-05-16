@@ -370,7 +370,7 @@ def index():
 
         # Lets go one extra step here and have the LLM interpret the answer, but limit to the first 50 results
         if good_query:
-            answer_prompt = DEFAULT_ANSWER_PROMPT.format(results=result_data["query_output"][:50], question=result_data["question"])
+            answer_prompt = DEFAULT_ANSWER_PROMPT.format(results=result_data["query_output"][:30], question=result_data["question"])
             result_data["llm_answer"] = llm(answer_prompt, DEFAULT_ANSWER_SYSTEM_MESSAGE, 0.7)
         else:
             result_data["llm_answer"] = "Query failed to execute."
