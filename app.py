@@ -345,7 +345,11 @@ def index():
         # Generate mongo query using the LLM and our assembled prompt
         # Temperature is VERY low here, we want no creativity in this process
         llm_generated_query = llm(prompt, DEFAULT_QUERY_SYSTEM_MESSAGE, 0.1)
-        result_data["llm_generated_query"] = json.loads(llm_generated_query) # convert to json
+
+        try:
+            result_data["llm_generated_query"] = json.loads(llm_generated_query) # convert to json
+        except:
+            result_data["llm_generated_query"] = llm_generated_query
 
         # Now the moment of truth... does our generated query execute and return data?
         result_data["query_output"] = []
