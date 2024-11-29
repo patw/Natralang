@@ -28,7 +28,7 @@ from mistralai import Mistral
 
 # Nice way to load environment variables for deployments
 from dotenv import load_dotenv
-load_dotenv()
+load_dotenv(override=True)
 
 # Create the Flask app object
 app = Flask(__name__)
@@ -38,7 +38,7 @@ app.config['SECRET_KEY'] = os.environ["SECRET_KEY"]
 app.config['SESSION_COOKIE_NAME'] = 'natralang'
 
 # API Key for app to serve API requests to clients
-API_KEY = os.environ["API_KEY"]
+# API_KEY = os.environ["API_KEY"]
 
 # User Auth
 users_string = os.environ["USERS"]
@@ -118,21 +118,28 @@ try:
                         },
                         "sample": {
                             "type": "string"
-                        },
-                        "description_embedding": [
-                            {
-                                "type": "knnVector",
-                                "dimensions": DEFAULT_VECTOR_DIMENSIONS,
-                                "similarity": "cosine"
-                            }
-                        ]  
+                        }
                     }
                 },
                 "analyzer": "lucene.english"
             },
+        },
+        {
+            "name": 'vector',
+            "type":"vectorSearch",
+            "definition": {
+                "fields": [
+                    {
+                        "path":"description_embedding",
+                        "type": "vector",
+                        "numDimensions": DEFAULT_VECTOR_DIMENSIONS,
+                        "similarity": "cosine"
+                    }
+                ]
+            },
         }
     ]}
-    db.command(command) 
+    db.command(command)
 except:
     # We've already configured the collection/search indexes before just keep going
     # Yes we intentially want this to fail on startup in most cases.
@@ -230,7 +237,7 @@ def search_sources_vector(prompt, candidates, limit, score_cut):
     vector_search_agg = [
         {
             "$vectorSearch": { 
-                "index": "default",
+                "index": "vector",
                 "path": "description_embedding",
                 "queryVector": vector,
                 "numCandidates": candidates, 
