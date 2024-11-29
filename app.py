@@ -11,7 +11,6 @@ from wtforms.validators import DataRequired
 
 # Basic python stuff
 import os
-import re
 import json
 import functools
 
@@ -25,8 +24,7 @@ import misaka
 # Import OpenAI, Azure and Mistral libraries
 from openai import OpenAI
 from openai import AzureOpenAI
-from mistralai.client import MistralClient
-from mistralai.models.chat_completion import ChatMessage
+from mistralai import Mistral
 
 # Nice way to load environment variables for deployments
 from dotenv import load_dotenv
@@ -61,8 +59,8 @@ def login_required(view):
 service_type = os.environ["SERVICE"]
 
 # Configure the various llm/embedding services
-if "MISTRAL_API_KEY" in os.environ:    
-    mistral_client = MistralClient(api_key=os.environ["MISTRAL_API_KEY"])
+if "MISTRAL_API_KEY" in os.environ:
+    mistral_client = Mistral(api_key=os.environ["MISTRAL_API_KEY"])
     model_name = os.environ["MODEL_NAME"]
     DEFAULT_SCORE_CUT = 0.82
     DEFAULT_VECTOR_DIMENSIONS = 1024
@@ -185,17 +183,17 @@ def embed_oai(text):
 # Call mistral's embedder (1024d)
 def embed_mistral(text):
     text = text.replace("\n", " ")
-    return mistral_client.embeddings(model="mistral-embed", input=[text]).data[0].embedding
+    return mistral_client.embeddings.create(model="mistral-embed", inputs=[text]).data[0].embedding
 
 # Query mistral models
 def llm_mistral(prompt, system_message, temperature):
-    messages = [ChatMessage(role="system", content=system_message), ChatMessage(role="user", content=prompt)]
-    response = mistral_client.chat(model=model_name, temperature=temperature, messages=messages)
+    messages=[{"role": "system", "content": system_message},{"role": "user", "content": prompt}]
+    response = mistral_client.chat.complete(model=model_name, temperature=temperature, messages=messages)
     return response.choices[0].message.content
 
 # Query OpenAI models
 def llm_oai(prompt, system_message, temperature):
-    messages = [ChatMessage(role="system", content=system_message), ChatMessage(role="user", content=prompt)]
+    messages=[{"role": "system", "content": system_message},{"role": "user", "content": prompt}]
     response = oai_client.chat.completions.create(model=model_name, temperature=temperature, messages=messages)
     return response.choices[0].message.content
 
