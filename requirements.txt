@@ -15,9 +15,6 @@ requests
 # Mongo stuff
 pymongo
 
-# Rendering stuff
-misaka
-
 # OpenAI
 OpenAI
 

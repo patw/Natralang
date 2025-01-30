@@ -12,14 +12,12 @@ from wtforms.validators import DataRequired
 # Basic python stuff
 import os
 import json
+import re
 import functools
 
 # Mongo stuff
 import pymongo
 from bson import ObjectId
-
-# Some nice formatting for code
-import misaka
 
 # Import OpenAI, Azure and Mistral libraries
 from openai import OpenAI
@@ -226,6 +224,27 @@ def get_sources(skip,limit):
 # Return the count of facts in the system
 def count_sources():
     return  col.count_documents({})
+
+# Strip out the json code blocks that models seem to outputting nowadays
+def strip_json_codeblock(text):
+    start = text.find('[')
+
+    # Keep track of brackets
+    bracket_count = 0
+    end = start
+
+    for i in range(start, len(text)):
+        if text[i] == '[':
+            bracket_count += 1
+        elif text[i] == ']':
+            bracket_count -= 1
+            if bracket_count == 0:
+                end = i
+                break
+
+    # Extract the content
+    content = text[start:end+1]
+    return content
         
 # Retrieve data sources based on the prompt
 def search_sources_vector(prompt, candidates, limit, score_cut):
@@ -342,7 +361,6 @@ def index():
             # Spit out the template - without data :(
             return render_template('index.html', result_data=result_data, form=form)
 
-
         # Assemble the final prompt
         prompt = DEFAULT_QUERY_PROMPT.format(collections=source_blob, question=q)
         result_data["prompt"] = prompt
@@ -353,6 +371,9 @@ def index():
 
         # Clean up weird stuff the LLM generates
         llm_generated_query = llm_generated_query.replace("\\", "")  # Why do you add backslashes to things
+
+        # Remove any json code block the LLM may have produced
+        llm_generated_query = strip_json_codeblock(llm_generated_query)
 
         try:
             result_data["llm_generated_query"] = json.loads(llm_generated_query) # convert to json
