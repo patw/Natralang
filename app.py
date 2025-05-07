@@ -12,7 +12,6 @@ from wtforms.validators import DataRequired
 # Basic python stuff
 import os
 import json
-import re
 import functools
 
 # Mongo stuff
@@ -67,7 +66,7 @@ if "OPENAI_API_KEY" in os.environ:
     oai_client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
     model_name = os.environ["MODEL_NAME"]
     embed_model_name = "text-embedding-3-small"
-    DEFAULT_SCORE_CUT = 0.7
+    DEFAULT_SCORE_CUT = 0.6
     DEFAULT_VECTOR_DIMENSIONS = 1536
 
 if "AZURE_API_KEY" in os.environ:
